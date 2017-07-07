@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import 'mocha'
-import { getComponents, renderComponents } from '../src/index'
+import { getComponents, renderComponents, getDocumentedComponents } from '../src/index'
 
 
 describe('when retrieving components', () => {
@@ -42,6 +42,45 @@ describe('when rendering components', () => {
 
     it('should render my component with the provided renderer', () => {
       expect(result).to.deep.equal(['testing<my-component></my-component>testing'])
+    })
+  })
+})
+
+describe('when rendering documentation components', () => {
+  let result: Promise<Array<Array<String>>> | null = null
+  describe('when having one document', () => {
+    before(() => {
+      result = getDocumentedComponents(['my-component.md'], (component: String) => {
+        return Promise.resolve(`
+        This is my awesome component:
+        \`\`\`
+          <my-component></my-component>
+        \`\`\``)
+      })
+    })
+
+    it('should resolve the component', async function() {
+      const documents = await result
+      const expectation = '          <my-component></my-component>        '
+      expect(documents).to.deep.equal([[expectation]])
+    })
+  })
+
+  describe('when having multiple documents', () => {
+    before(() => {
+      result = getDocumentedComponents(['my-component.md', 'other-component.md'], (component: String) => {
+        return Promise.resolve(`
+        This is my awesome component:
+        \`\`\`
+          <my-component></my-component>
+        \`\`\``)
+      })
+    })
+
+    it('should resolve the component', async function() {
+      const documents = await result
+      const expectation = '          <my-component></my-component>        '
+      expect(documents).to.deep.equal([[expectation], [expectation]])
     })
   })
 })

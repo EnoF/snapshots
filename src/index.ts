@@ -7,3 +7,8 @@ export function getComponents(documentation: String) {
 export function renderComponents(components: Array<String>, render: Function) {
   return components.map(component => render(component))
 }
+
+export async function getDocumentedComponents(fileNames: Array<String>, getDocumentation: Function) {
+  const files = await Promise.all(fileNames.map(fileName => getDocumentation(fileName)))
+  return files.map((file: String) => getComponents(file))
+}
