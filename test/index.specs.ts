@@ -1,33 +1,29 @@
 import { expect } from 'chai'
 import 'mocha'
-import { getComponents } from '../src/index'
+import snapshots from '../index'
 
-
-describe('when retrieving components', () => {
-  let result: Array<String> = []
-  describe('when having one code block', () => {
-    before(() => {
-      result = getComponents([
-        '```',
-        '<my-component></my-component>',
-        '```',
-      ].join(''))
-    })
-
-    it('should retrieve my component', () => {
-      expect(result).to.deep.equal(['<my-component></my-component>'])
-    })
+describe('when snapshotting documentation', () => {
+  let result: any = null
+  before(async () => {
+    return result = await snapshots(`${__dirname}/fixtures`)
   })
-  describe('when having a code block with new lines', () => {
-    before(() => {
-      result = getComponents(`\`\`\`
-          <my-component></my-component>
-        \`\`\``)
-    })
 
-    it('should retrieve my component', () => {
-      const expectation = '          <my-component></my-component>        '
-      expect(result).to.deep.equal([expectation])
-    })
+  it('should have the root component', () => {
+    expect(recursiveSearch('<root-component>', result)).to.equal(true)
+  })
+
+  it('should have the other component', () => {
+    expect(recursiveSearch('<other-component>', result)).to.equal(true)
+  })
+
+  it('should have the my component', () => {
+    expect(recursiveSearch('<my-component>', result)).to.equal(true)
   })
 })
+
+function recursiveSearch(term: string, data: Array<any>): Boolean {
+  return data.some(content => {
+    if (Array.isArray(content)) return recursiveSearch(term, content)
+    return content.includes(term)
+  })
+}
