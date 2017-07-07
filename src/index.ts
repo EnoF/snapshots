@@ -3,3 +3,7 @@ export function getComponents(documentation: String) {
   if (!matches) return []
   return matches.map(component => component.replace(/(```|\n|\r')/g, ''))
 }
+
+export function renderComponents(components: Array<String>, render: Function) {
+  return components.map(component => render(component))
+}

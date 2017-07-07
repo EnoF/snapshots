@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import 'mocha'
-import { getComponents } from '../src/index'
+import { getComponents, renderComponents } from '../src/index'
 
 
 describe('when retrieving components', () => {
@@ -28,6 +28,20 @@ describe('when retrieving components', () => {
     it('should retrieve my component', () => {
       const expectation = '          <my-component></my-component>        '
       expect(result).to.deep.equal([expectation])
+    })
+  })
+})
+
+describe('when rendering components', () => {
+  let result: Array<String> = []
+  describe('when having one component to render', () => {
+    before(() => {
+      result = renderComponents(['<my-component></my-component>'], 
+        (component: String) => `testing${component}testing`)
+    })
+
+    it('should render my component with the provided renderer', () => {
+      expect(result).to.deep.equal(['testing<my-component></my-component>testing'])
     })
   })
 })
